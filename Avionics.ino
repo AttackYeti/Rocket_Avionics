@@ -3,8 +3,24 @@ Developer Notes
 ~~~~~
 -The SD library uses an obnoxious amount of memory.
 -IMU data will be fairly complicated and may take the longest time depending on method used
--
+-Should propably use established libraries for IMU
+-Need Bluetooth Implemented
+-Need GPS implemented
+-Would be cool to have pwm to play sounds via the buzzer
 */
+#include <Adafruit_ATParser.h>
+#include <Adafruit_BluefruitLE_SPI.h>
+#include <Adafruit_BLEMIDI.h>
+#include <Adafruit_BLEBattery.h>
+#include <Adafruit_BLEGatt.h>
+#include <Adafruit_BLEEddystone.h>
+#include <Adafruit_BLE.h>
+#include <Adafruit_BluefruitLE_UART.h>
+
+#include <printf.h>
+#include <nRF24L01.h>
+#include <RF24_config.h>
+#include <RF24.h>
 
 #include <Adafruit_BMP085.h>
 #include <Adafruit_Sensor.h>
@@ -15,16 +31,26 @@ Developer Notes
 #include <avr/sleep.h>
 
 // Set the pins
-#define chipSelect 10
-#define ledPin 13
-#define sirenPin 2
+#define gpsInterruptPin 3
+#define BLETx 5
+#define BLERx 6
+#define GPSRx 7
+#define GPSTx 8
+#define SDCS 10
+#define SDMOSI 11
+#define SDMISO 12
+#define SDCLK 13
+#define parachuteDeployPin A1
+#define sirenPin A2
+
 #define filename "LOGDATA.txt"
 
-int parachuteDeployed = 0;
+int parachuteDeployed = false;
 bool FORCE_PARA_DEPLOY = false;
 
 File logfile;
-SoftwareSerial gpsSerial(8, 7);
+SoftwareSerial gpsSerial(GPSTx, GPSRx);
+SoftwareSerial bleSerial(BLETx, BLERx);
 Adafruit_GPS GPS(&gpsSerial);
 Adafruit_BMP085 bmp;
 
@@ -33,22 +59,18 @@ Adafruit_BMP085 bmp;
 void setup() {
   Serial.begin(115200);
   GPS.begin(9600);
-  SD.begin();
+  bleSerial.begin(9600);
   bmp.begin();
-  
-  pinMode(10, OUTPUT);    // Chip Select pin must be set as output even if unused.
-  
-  logfile = SD.open(filename, FILE_WRITE);
 
+  sdConfigure();
   gpsConfigure();
 }
 
 void loop() {
-  radioData = getRadioData();
   parachuteDeployed = manageParachuteDeploy(parachuteDeployed);
-  checkRecovery(parachuteDeployed);
+  Recovery(parachuteDeployed);
   
-  String gpsData = getGPSdata();
+  char gpsData = getGPSdata();
   int imuData = getIMUdata();
   int temperatureData = bmp.readTemperature();
   int altitudeData = bmp.readAltitude();
@@ -60,12 +82,19 @@ void loop() {
 // ===                   SUPPORT FUNCTIONS                      ===
 // ================================================================
 
-void logData(int gpsData, int altitudeData, int imuData) {  //Incomplete
-  // Need to format all data from int -> String and then format into a standard csv format
-  // Then write the standardized string to the file all at once
-  char logString = "abc";
+void logData(char gpsData, int altitudeData, int temperatureData, int imuData) {
+  /* 
+  * Need to format all arguments from int -> String and then format into a standard csv format
+  * Then write the standardized string to the file all at once. logString should hold all of the converted
+  * data in the specified format. The procedure for data being formatted should be fairly easy to modify if more info
+  * is needed.
+  */
+  logfile = SD.open(filename, FILE_WRITE);
+  
+  String logString = String(altitudeData) + ", " + char(imuData) + ", " + char(gpsData) + ", " + char(temperatureData);
 
-  logfile.write(logString);
+  logfile.println(logString);
+  logfile.close();
 }
 
 void gpsConfigure() {
@@ -74,19 +103,20 @@ void gpsConfigure() {
   GPS.sendCommand(PGCMD_NOANTENNA);   // Turn off updates on antenna status, if the firmware permits it
 }
 
-String getGPSdata() {
+char getGPSdata() {
+  gpsSerial.listen();
   GPS.read();
   
   if (GPS.newNMEAreceived()) {    // If a new sentence is recieved  
     char *stringptr = GPS.lastNMEA();  
   
     if (!GPS.parse(stringptr)){   // this sets the newNMEAreceived() flag to false
-      return "Parse Fail";  // we can fail to parse a sentence in which case we should just wait for another
+      return char("Parse Fail");  // we can fail to parse a sentence in which case we should just wait for another
     }
   
     if (LOG_FIXONLY && !GPS.fix) {
       Serial.print("No Fix");
-      return "No Fix";
+      return char("No Fix");
     }
   
     else {
@@ -96,11 +126,11 @@ String getGPSdata() {
 }
 
 int getIMUdata() {  // Incomplete
-  
+
 }
 
-int manageParachuteDeploy(parachuteDeployed) {   // Incomplete
-  /*
+bool manageParachuteDeploy(bool parachuteDeployed) {
+   /* 
    * This function needs to check relevant data as well as wireless coms in order to see if parachute deployment should be activated, and if so then activate it.
    * You will most likely need to change your input variables in order to get useful info. You might try checking for patterns in the altitude or accelerations 
    * using the IMU. ie freefall or something like that. It could be good to have multiple checks that would be activated just for redundancy. In order to actually 
@@ -112,35 +142,56 @@ int manageParachuteDeploy(parachuteDeployed) {   // Incomplete
    *    return 1
    */
   if (FORCE_PARA_DEPLOY) {
-    digitalWrite(ParachuteDeployPin, HIGH);
-    delay(100);
-    return 1
+    digitalWrite(parachuteDeployPin, HIGH);
+    return true;
   }
   
   if (parachuteDeployed) {
-    return 1
+    return true;
   }
   
   // if ( !parachuteDeployed && (conditional1 || conditional2 || conditional3 || etc) ) {
   //   digitalWrite(ParachuteDeployPin, HIGH);
-  //   delay(100);
-  //   return 1
+  //   return true
   // }
   
   else {
-    return 0
+    return false;
   }
 }
 
-void Recovery(parachuteDeployed) {  // Incomplete
-  // This function handles the recovery buzzer as well as broadcasting recovery data and any other recovery procedures
-   if (parachuteDeployed) {
+void Recovery(bool parachuteDeployed) {
+  // This function handles the recovery buzzer as well as broadcasting recovery data and any other recovery procedures.
+  
+  if (parachuteDeployed) {
     digitalWrite(sirenPin, HIGH);
-    // Add code here
-   }
+    // Add recovery code here
+  }
 }
 
-char getRadioData() {   // Incomplete
+void bleConfigure() {
   
 }
 
+char getBLEdata() {
+  bleSerial.listen();
+  int i = 1;
+  char output[32] = {0};
+  while (bleSerial.available() > 0 && i <= 32) {
+    char inByte = bleSerial.read();
+    output[i] = inByte;
+    i += 1;
+  }
+  return output;
+}
+
+void sdConfigure() {
+  Serial.print("Initializing SD card...");
+
+  if (!SD.begin(SDCS)) {
+    Serial.println("initialization failed!");
+  }
+  else {
+    Serial.println("initialization done.");
+  }
+}
