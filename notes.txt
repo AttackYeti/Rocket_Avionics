@@ -1,5 +1,7 @@
 Avionics Parts List
 -------------------
+This is not an exhaustive list, this is just a modified version of where everything started.
+It is not updated and is only kept in the repo for reference purposes.
 
 Arduino Uno
 
@@ -14,6 +16,10 @@ Arduino Uno
 --https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-EV-Board1.pdf
 
 (Siren) Piezo Buzzer
+
+
+!!!Outdated information below this point!!!
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 (Radio) nRF24L01+
 ~~ Need to replace with antennae version
