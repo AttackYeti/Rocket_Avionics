@@ -1,0 +1,69 @@
+Parts List
+~~~~~~~~~~~
+
+~SENSORS~
+IMU - BNO055
+Baro - BMP388
+
+~CONTROLLERS~
+MCU - Arduino
+
+
+~MISCELLANEOUS~
+2x 	(5V relay)
+1x 	(20ft wire - Red)
+1x 	(20ft wire - Black)
+1x 	(20ft wire - White)
+1x 	(Arduino Proto-Shield)
+1x 	(Micro SD Card)
+1x 	(Micro SD Card Module)
+2x 	(5V Regulator MP1584EN)
+1x 	(Voltage Detector)
+	(Wire Connectors)
+2x	(9V+ 1500mAh Battery)
+1x	(Electrical Tape)
+1x	(MultiMeter)
+
+
+
+Need to submit reimbursements for
+LiPo Battery
+Wire
+E-Matches
+
+
+*Need real-time clock
+*Add GSM ???
+
+Concerns for Avionics
+-Need sturdier mount
+	~Absolutely no acrylic
+	~Ideal would be some sort of very strong, non-conductive material
+-Need ignition circuit and power circuit mounted on pcb
+-Need better battery mount
+-Need dedicated mounting point for secondary altimeter
+-Need to plan some way to run wires up inside the tube to the arming hole
+-
+
+Pido Tube?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hey Eddie, the other Bird,
+
+Its me, your wife...Claudia Bird *insert sunglasses emoji here*, and I just wanted to let you know something important. I love you to (the radience of convergence of the number series for e^x) and back. I would also like to add that I think that you are an incredible person: kind hearted, determined, consistent, incredibly intelligent, and you dad jokes are unmatched. I hope that you aren't feeling too down right now, because I don't like when you are sad and not like yourself. Anyway, I hope you have enjoyed this monologue on your official document.
+
+I love you,
+Claudia (the possibly cooler) Bird
