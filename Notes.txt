@@ -1,48 +1,43 @@
-Parts List
-~~~~~~~~~~~
+To-Do List
+-----------
+Hardware
+	-Build proto for V0.2
+		-Replace Power supply
+		-Replace Ignition Circuit
+		-Replace SD Card Module
+		-Replace Relays
+	-Construct new avionics mount
+	-Construct testing avionics mount
+	-Build Lil' Lad
+	-Build more deployment charges
+	-Improve charge isolation
+	-Find something besides friction fit to keep nose cone attached
 
-~SENSORS~
-IMU - BNO055
-Baro - BMP388
+Software
+	-Implement RTC
+	-Implement GPS
+	-Update BARO
+	-Update IMU
+	-Acceleration based algorithm for deployment
+	-Calibrate Accelerometer/Gyro/Magnetometer
+	-Calibrate Baro (Need script to update calibration on launch day)
+	-Set RTC
+	-Improve inline documentation
+	-Formal Code Write-up
+	-Post Launch Data Analysis Script/Program
+	-Python Script to automate launch-day calibrations
+	-Look into different datalogging solutions (Current method is absurdly slow)
+	-Look into potential communications options
+	
 
-~CONTROLLERS~
-MCU - Arduino
+Data
+	~Acceleration during launch/burnout/apogee/freefall
+	~System Current Draw
 
-
-~MISCELLANEOUS~
-2x 	(5V relay)
-1x 	(20ft wire - Red)
-1x 	(20ft wire - Black)
-1x 	(20ft wire - White)
-1x 	(Arduino Proto-Shield)
-1x 	(Micro SD Card)
-1x 	(Micro SD Card Module)
-2x 	(5V Regulator MP1584EN)
-1x 	(Voltage Detector)
-	(Wire Connectors)
-2x	(9V+ 1500mAh Battery)
-1x	(Electrical Tape)
-1x	(MultiMeter)
-
-
-
-Need to submit reimbursements for
-LiPo Battery
-Wire
-E-Matches
+Ideas
+	*Implement Tilt-based backup deployment ???
+	*Add GSM 	???
+	*Pido Tube	???
 
 
-*Need real-time clock
-*Add GSM ???
 
-Concerns for Avionics
--Need sturdier mount
-	~Absolutely no acrylic
-	~Ideal would be some sort of very strong, non-conductive material
--Need ignition circuit and power circuit mounted on pcb
--Need better battery mount
--Need dedicated mounting point for secondary altimeter
--Need to plan some way to run wires up inside the tube to the arming hole
--
-
-Pido Tube?
