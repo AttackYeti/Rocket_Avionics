@@ -4,9 +4,9 @@ Currently the project uses an Arduino along with relevant sensors.
 
 Components
 -------
-~BNO055~
-~BMP388~
-~Arduino Nano~
+  BNO055
+  BMP388
+  Arduino Nano
 
 
 
