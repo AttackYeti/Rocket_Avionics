@@ -4,7 +4,7 @@ Currently the project uses an Arduino along with relevant sensors.
 
 Components
 -------
-BNO055
+BNO055 \n
 BMP388
 Arduino Nano
 SD Card module
