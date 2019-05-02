@@ -1,12 +1,14 @@
 # Rocket_Avionics
 This is the central hub for resources relating to the avionics for Space Enterprise Berkeley's Rocket.
+Currently the project uses an Arduino along with relevant sensors.
 
-Currently the project uses an Arduino Uno along with relevant sensors.
-
-Sensors
+Components
 -------
-MPU6050
-BMP180
-Adafruit GPS Shield
+BNO055
+BMP388
+Arduino Nano
+SD Card module
+
+
 
 
