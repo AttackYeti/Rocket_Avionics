@@ -22,19 +22,12 @@ Hardware
 Software
 	-Implement RTC
 	-Implement GPS
-	-Implement Buzzer
 	-Implement Battery Voltage Sensor
-	-Update BARO
-	-Update IMU
 	-Acceleration based algorithm for deployment
-	-Calibrate Accelerometer/Gyro/Magnetometer
-	-Calibrate Baro (Need script to update calibration on launch day)
-	-Calibrate RTC
 	-Improve inline documentation
 	-Formal Code Write-up
 	-Post Launch Data Analysis Script/Program
 	-Python Script to automate launch-day calibrations
-	-Look into different datalogging solutions (Current method is absurdly slow)
 	-Look into potential communications options
 	-Develop communications standard for chosen option
 	-
@@ -46,14 +39,13 @@ Data
 	~Acceleration during launch/burnout/apogee/freefall
 	~System current draw
 	~Communications range/signal strength/data integrity
+	~
 
 Ideas
-	*Implement Tilt-based backup deployment ???
 	*Add GSM for communications	???
-	*Pido Tube for air speed	???
 	*
 	
-Homework
+Homework for Newcomers
 	>Software
 		>Ask questions
 		>Get familiar with I2C
