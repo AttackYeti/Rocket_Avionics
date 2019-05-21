@@ -13,15 +13,15 @@ Components
 IMU - BNO055  
 BARO- BMP388  
 RTC - DS3231  
-MCU - Espressif ESP32
+MCU - Espressif ESP32  
 
 Tentative Timeline
 -------
-Friday, May 31  - Initial Prototype Complete
-Friday, June 7  - First Prototype Test Launch
-Friday, June 21 - Preliminary Design of PCB
-Friday, June 28 - Complete Design Review of PCB
-Friday, July 5  - Order Components & PCB of finalized design
-Friday, July 19 - Complete assembly of single board
-Friday, July 26 - Begin launch testing of integrated board
+Friday, May 31  - Initial Prototype Complete  
+Friday, June 7  - First Prototype Test Launch  
+Friday, June 21 - Preliminary Design of PCB  
+Friday, June 28 - Complete Design Review of PCB  
+Friday, July 5  - Order Components & PCB of finalized design  
+Friday, July 19 - Complete assembly of single board  
+Friday, July 26 - Begin launch testing of integrated board  
 
