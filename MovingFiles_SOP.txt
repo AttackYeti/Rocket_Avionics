@@ -1,0 +1,27 @@
+Copying Files from the computer to the Pi must be done 
+any time source code is updated. The approved method for testing is
+to run code on the Pi, if tweaks must be made, they should be made
+on the computer and then re-uploaded. The computer should always have the most up-to-date code.
+
+SOP-COPYING FILES TO PI
+~SSH into Pi following the SOP for establishing an SSH connection
+~open a terminal on the host computer
+	-navigate to the file(s) of interest in the terminal window
+	-type "scp <filename> pi@raspberrypi.local:<target_location>
+		ex. If I wanted to copy a file named main.py to a 			folder called Avionics on the Desktop I would use...
+		"scp main.py pi@raspberrypi.local:Desktop"
+	-when prompted, enter "raspberry" as the SSH pasword
+
+SOP-COPYING FILES FROM PI
+~open a terminal on the target computer
+	-Navigate to the target directory in the terminal window
+	-type "scp pi@raspberrypi.local:<target_file>
+	-when prompted, enter "raspberry" as the SSH password
+
+SOP-MOVING MULTIPLE FILES
+~Follow the same procedure as above but enter target files one after another separated by spaces.
+
+SOP-MOVING FILES WITH SPACES IN THE NAME
+You shouldn't have made a file with spaces in the name, but if you happen to have to deal with them, use the same format as before, except when entering the file name, surround it in double quotes.
+ex. <filename> becomes <"filename">
+ex. target file.txt becomes "target file.txt"

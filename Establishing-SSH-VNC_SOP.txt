@@ -1,0 +1,25 @@
+Standard Operating Procedure for Connecting to Pi over SSH and VNC
+
+~Establish SSH connection
+	-Connect power to Pi
+	-Connect ethernet cable between Pi and computer
+	-Ensure WiFi is turned off on computer (Does not matter for Pi)
+	-Open Terminal and type...
+		"ssh pi@raspberrypi.local"
+	-When Prompted for the password enter "raspberry"
+	-You now have a super-user cli for the Pi
+~Establish VNC connection
+	-In the Pi's SSH terminal type...
+		"tightvncserver"
+	-Open a new terminal window for the computer
+	-Type...
+		"vinagre"
+	In the window that opens select connect then...
+		set protocol to "VNC" 
+		set host to "raspberrypi.local:1"
+		set scaling to true
+		in [use host as ssh tunnel]
+			type...
+				pi@raspberypi.local
+	select connect
+	in the both password prompts enter "raspberry" and hit enter

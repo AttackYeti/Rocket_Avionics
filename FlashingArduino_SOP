@@ -1,0 +1,11 @@
+STANDARD_OPERATING_PROCEDURE
+Flashing Code to Arduino
+# Code cannot be uploaded to the Arduino using the Pi. It must be disconnected from the Pi, connected to the development computer and 
+manually flashed.
+
+~Disconnect Arduino from Pi
+~Connect Arduino to computer via usb
+~Open Arduino IDE
+~Verify code then upload to Arduino
+~Disconnect Arduino from computer
+~Reconnect Arduino to Pi
