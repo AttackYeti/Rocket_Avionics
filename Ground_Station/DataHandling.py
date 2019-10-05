@@ -1,12 +1,19 @@
+from HardwareInput import switch
 import serial
-import matplotlib.pyplot as plt
-import matplotlib.animation as anim
+#import matplotlib.pyplot as plt
+#import matplotlib.animation as anim
+import csv
+import time
+import os.path
+
 class GroundBrain:
     def __init__(self, SERIAL_ADDRESS='/dev/ttyS0'):
 
         self.DELIMITER = b'~'
         self.SERIAL_ADDRESS = SERIAL_ADDRESS
-        self.DATALOGGING_ENABLED = False
+        self.DATALOGGING_ENABLED = True
+        self.DATA_FILE_OBJECT = open(findOutputFile(), "w")
+        self.CSV_WRITER = csv.writer(self.DATA_FILE_OBJECT)
         self.SERIAL_STREAM = serial.Serial(
             port=self.SERIAL_ADDRESS,
             baudrate = 57600,
@@ -15,16 +22,16 @@ class GroundBrain:
             bytesize=serial.EIGHTBITS,
             timeout=1)
 
-        self.dataCurrent = {"ALTITUDE": 0.0, #meter? feet?
-                            "ATMOSPHERE_PRESSURE": 0.0, #atm
-                            "ACCEL": 0.0, #Gs
-                            "TIME": 0.0, #seconds
-                            "FUEL_PRESSURE": 0.0, #psi
-                            "LOX_PRESSURE": 0.0, #psi
+        self.dataCurrent = {"ALTITUDE": 1.0, #meter? feet?
+                            "ATMOSPHERE_PRESSURE": 2.0, #atm
+                            "ACCEL": 3.0, #Gs
+                            "TIME": 4.0, #seconds
+                            "FUEL_PRESSURE": 5.0, #psi
+                            "LOX_PRESSURE": 6.0, #psi
                             "Bin0": False,
-                            "Bin1": False,
+                            "Bin1": True,
                             "Bin2": False,
-                            "Bin3": False
+                            "Bin3": True
                             }
         self.dataPast = {"ALTITUDE": [], #meter? feet?
                             "ATMOSPHERE_PRESSURE": [], #atm
@@ -36,21 +43,24 @@ class GroundBrain:
                             "Bin1": [],
                             "Bin2": [],
                             "Bin3": []}
-        self.figure, self.axes = plt.subplots(5,2)
-        self.graphs = {}
-        self.initGraphs()
+        self.initFileHeaders()
 
-    def initGraphs(self):
-        counter = 0
-        for key in self.dataCurrent.keys():
-            self.graphs[key] = self.axes[counter//2][counter%2]
-            self.graphs[key].set_ylabel(key)
-            self.graphs[key].set_xlabel("TIME")
-            counter += 1
+    def findOutputFile(self):
+        for i in range(100):
+            if not os.path.exists("DataLog{}.csv".format(i))
+                break
+        return i
 
-    def logData(self, DATA):
+    def initFileHeaders(self):
+        self.CSV_WRITER.writerow(self.dataCurrent.keys())
+
+    def logData(self, DATA = "DEFAULT"):
+        """Logs data to a csv file"""
         if self.DATALOGGING_ENABLED:
-            self.DATA_FILE_OBJECT.write(DATA)
+            if DATA == "DEFAULT":
+                self.CSV_WRITER.writerow(self.dataCurrent.values())# order guaranteed to line up as long as no new keys are added/removed
+            else:
+                self.CSV_WRITER.writerow(DATA)
             print(DATA)
         else:
             print("Datalogging Disabled. Unable to write to file.")
@@ -92,17 +102,18 @@ class GroundBrain:
         return parsedData
 
     def updateDummy(self):
-        """Produces dummy data for dataCurrent and dataPast"""
+        """Produces random dummy data"""
         for key in self.dataCurrent.keys():
-            self.dataCurrent[key] += 1
+            import random
+            self.dataCurrent[key] = random.random()
             self.dataPast[key].append(self.dataCurrent[key])
-    def updateGraph(self, frame):
-        self.updateDummy()
-        for name, axis in self.graphs.items():
-            axis.plot(self.dataPast["TIME"], self.dataPast[name])
-    def startGraph(self):
-        """Warning: this function blocks thread. Remember to call with multithreading"""
-        a = anim.FuncAnimation(self.figure, self.updateGraph)
-        plt.show()
-x = GroundBrain()
-x.startGraph()
+
+    def testSwitch():
+        while True:
+            if switch(3):
+                print('yeet')
+                time.sleep(.2)
+
+    def testLogData():
+        x = GroundBrain()
+        x.logData()
