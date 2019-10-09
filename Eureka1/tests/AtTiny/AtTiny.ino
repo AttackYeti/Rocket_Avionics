@@ -9,7 +9,8 @@ void setup(){
   Serial.begin(9600);
 }
 
+int val = 5;
 void loop(){
-  Serial.print(78);
+  Serial.print(val);
   delay(1000);
 }
