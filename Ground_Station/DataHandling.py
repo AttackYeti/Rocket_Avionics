@@ -1,7 +1,5 @@
 from HardwareInput import switch
 import serial
-#import matplotlib.pyplot as plt
-#import matplotlib.animation as anim
 import csv
 import time
 import os.path
@@ -12,7 +10,7 @@ class GroundBrain:
         self.DELIMITER = b'~'
         self.SERIAL_ADDRESS = SERIAL_ADDRESS
         self.DATALOGGING_ENABLED = True
-        self.DATA_FILE_OBJECT = open(findOutputFile(), "w")
+        self.DATA_FILE_OBJECT = open(self.findOutputFile(), "w")
         self.CSV_WRITER = csv.writer(self.DATA_FILE_OBJECT)
         self.SERIAL_STREAM = serial.Serial(
             port=self.SERIAL_ADDRESS,
@@ -21,17 +19,17 @@ class GroundBrain:
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
             timeout=1)
-
-        self.dataCurrent = {"ALTITUDE": 1.0, #meter? feet?
-                            "ATMOSPHERE_PRESSURE": 2.0, #atm
-                            "ACCEL": 3.0, #Gs
-                            "TIME": 4.0, #seconds
-                            "FUEL_PRESSURE": 5.0, #psi
-                            "LOX_PRESSURE": 6.0, #psi
+        self.RUNNING = True
+        self.dataCurrent = {"ALTITUDE": 0.0, #meter? feet?
+                            "ATMOSPHERE_PRESSURE": 0.0, #atm
+                            "ACCEL": 0.0, #Gs
+                            "TIME": 0.0, #seconds
+                            "FUEL_PRESSURE": 0.0, #psi
+                            "LOX_PRESSURE": 0.0, #psi
                             "Bin0": False,
-                            "Bin1": True,
+                            "Bin1": False,
                             "Bin2": False,
-                            "Bin3": True
+                            "Bin3": False
                             }
         self.dataPast = {"ALTITUDE": [], #meter? feet?
                             "ATMOSPHERE_PRESSURE": [], #atm
@@ -47,9 +45,9 @@ class GroundBrain:
 
     def findOutputFile(self):
         for i in range(100):
-            if not os.path.exists("DataLog{}.csv".format(i))
+            if not os.path.exists("DataLog{}.csv".format(i)):
                 break
-        return i
+        return "DataLog{}.csv".format(i)
 
     def initFileHeaders(self):
         self.CSV_WRITER.writerow(self.dataCurrent.keys())
@@ -61,7 +59,6 @@ class GroundBrain:
                 self.CSV_WRITER.writerow(self.dataCurrent.values())# order guaranteed to line up as long as no new keys are added/removed
             else:
                 self.CSV_WRITER.writerow(DATA)
-            print(DATA)
         else:
             print("Datalogging Disabled. Unable to write to file.")
 
@@ -72,17 +69,16 @@ class GroundBrain:
             self.handleError('002')
 
     def getSerialData(self):
-        message = readline()
+        message = self.SERIAL_STREAM.readline()
         return message
 
-    def parseData(self, DATA):
+    def parseData(self, DATA = "DEFAULT"):
+        if DATA == "DEFAULT":
+            DATA = self.getSerialData()
         parsedData = [DATA.split(self.DELIMITER)]
-        print(parsedData)
-        #try:
-        for n in len(parsedData):
+        for n in range(len(parsedData)):
             datum = parsedData[n]
-            parsedData[n] = datum.decode()
-            print(parsedData)
+            parsedData[n] = str(datum).decode()
 
         if parsedData[0] is 'LOG':
             self.dataCurrent["ALTITUDE"] = parsedData[1]
@@ -101,6 +97,12 @@ class GroundBrain:
             self.handleError('005')
         return parsedData
 
+    def stopRunning(self):
+        self.RUNNING = False
+
+    def stopLogging(self):
+        self.DATALOGGING_ENABLED = False
+
     def updateDummy(self):
         """Produces random dummy data"""
         for key in self.dataCurrent.keys():
@@ -117,3 +119,7 @@ class GroundBrain:
     def testLogData():
         x = GroundBrain()
         x.logData()
+
+    def handleError(self, code):
+	#TODO: IMPLEMENT THIS
+	pass

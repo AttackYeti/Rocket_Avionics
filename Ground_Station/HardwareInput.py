@@ -1,4 +1,5 @@
 def switch(pin):
+    """return if switch is on or off"""
     import RPi.GPIO as GPIO
     import time
 
@@ -7,7 +8,5 @@ def switch(pin):
 
     input_state = GPIO.input(pin)
     if not input_state:
-        # print('switch is on')
-        # time.sleep(0.2)
         return True
     return False
