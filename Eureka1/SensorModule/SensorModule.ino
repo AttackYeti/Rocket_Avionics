@@ -8,10 +8,13 @@
 #define SSTX 6
 #define SSDE 12
 
-#define SENSOR_INPUT_1
-#define SENSOR_INPUT_2
-#define SENSOR_INPUT_3
-#define SENSOR_INPUT_4
+#define SENSOR_INPUT_AMP_1 A7 //amplified
+#define SENSOR_INPUT_AMP_2 A6 //amplified
+#define SENSOR_INPUT_1 A3 //not amplified
+#define SENSOR_INPUT_2 A2 //not amplified
+
+#define HI_PRESSURE_SENSOR 1
+#define LO_PRESSURE_SENSOR 2
 
 // Define MACROs to be used throughout the codes
 // Message structure = ID_CODE/VALUE/CONNECTION
@@ -40,9 +43,9 @@ typedef struct {
     int buffer[5];
 } Sensor;
 
-
 void recieve_message(Stream &port);
 void send_message(char message, Stream &port);
+void initializeSensor(Sensor &Sensor, input_pin, sensor_type)
 
 void command1(int value);
 void command2(int value);
@@ -57,6 +60,10 @@ void command10(int value);
 
 // Define abstractions
 SoftwareSerial rs485serial(SSRX, SSTX); //rx, tx
+Sensor Sensor1;
+Sensor Sensor2;
+Sensor Sensor3;
+Sensor Sensor4;
 
 // STATE VARIABLES
 
@@ -70,21 +77,26 @@ void setup(){
     Serial.println("Serial connections initialized.");
 
     // initialize the motor abstractions
-    initializeStepperMotor(MotorA, MOTOR_ENABLE_A, MOTOR_DIRECTION_A, MOTOR_STEP_A);
-    initializeStepperMotor(MotorB, MOTOR_ENABLE_B, MOTOR_DIRECTION_B, MOTOR_STEP_B);
+    initializeSensor(Sensor1, SENSOR_INPUT_AMP_1, HI_PRESSURE_SENSOR); //edit for different sensors
+    initializeSensor(Sensor2, SENSOR_INPUT_AMP_2, HI_PRESSURE_SENSOR); //edit for different sensors
+    initializeSensor(Sensor3, SENSOR_INPUT_1, LO_PRESSURE_SENSOR); //edit for different sensors
+    initializeSensor(Sensor4, SENSOR_INPUT_2, LO_PRESSURE_SENSOR); //edit for different sensors
 
-    Serial.println("Motors initialized...");
+    Serial.println("Sensor(s) initialized...");
 
     // User friendly status message for debugging
     Serial.println("setup done");
 }
 
 void loop() {
+
+    updateSensor(Sensor1);
+    updateSensor(Sensor2);
+    updateSensor(Sensor3);
+    updateSensor(Sensor4);
+    
     recieve_message(rs485serial, SSDE);
     recieve_message(Serial, 255);
-
-    controlMotor(MotorA);
-    controlMotor(MotorB);
 }
 
 void recieve_message(Stream &port, int controlPin){
@@ -171,36 +183,65 @@ void send_message(Stream &port, char message, int controlPin){
 
 void updateSensor(Sensor &Sensor) {
 
-    Sensor.value = analogRead(Sensor.input_pin);
+  int sum = 0;
+  for(int i = sizeof(Sensor.buffer) - 1; i > 0 ; i--){
+    Sensor.buffer[i] = Sensor.buffer[i-1];
+    sum += Sensor.buffer[i];
+  }
+
+    int current_reading = adjustValue(Sensor, analogRead(Sensor.input_pin));
+  Sensor.buffer[0] = current_reading;
+  sum += Sensor.buffer[0];
+
+    Sensor.value = int(sum / sizeof(Sensor.buffer));
 
 }
 
-int adjustValue(Sensor &Sensor) {
+void initializeSensor(Sensor &Sensor, input_pin, sensor_type){
 
+  Sensor.value = 0;
+  Sensor.input_pin = input_pin;
+  Sensor.sensor_type = sensor_type;
+  for(int i = 0; i < sizeof(Sensor.buffer); i++){
+    Sensor.buffer[i] = 0;
+  }
+  pinMode(input_pin, INPUT);
+}
+
+int adjustValue(Sensor &Sensor, int raw_value) {
+
+  int rval = 0;
+
+  if(Sensor.sensor_type == HI_PRESSURE_SENSOR){
+    rval = raw_value; // EDIT THIS
+  } 
+  else if(Sensor.sensor_type == LO_PRESSURE_SENSOR){
+    rval = raw_value; // EDIT THIS
+  }
+  else{
+    Serial.println("Sensor Type not recongized")
+  }
+  return rval;
 }
 
 // ~~~~ Primary commands ~~~~
 // Return reading from sensor input 1
 void command1(int value) {
-    int value = adjustValue(Sensor1)
     char message = itoa(Sensor1.value);
     send_message(rs485serial, message, SSDE);
 }
 // Return reading from sensor input 2
 void command2(int value) {
-    int value = adjustValue(Sensor2);
     char message = itoa(Sensor2.value);
     send_message(rs485serial, message, SSDE);
 }
 // Return reading from sensor input 3
 void command3(int value) {
-    int value = adjustValue(Sensor3);
     char message = itoa(Sensor3.value);
     send_message(rs485serial, message, SSDE);
 }
 // Return reading from sensor input 4
 void command4(int value) {
-    int value = adjustValue(Sensor4);
     char message = itoa(Sensor4.value);
     send_message(rs485serial, message, SSDE);
 }
