@@ -1,20 +1,20 @@
-int stepPin = 9;
-int dirPin = 7;
+int stepPin = 3;
+int dirPin = 4;
 //int enablePin = 8;
-int dir = HIGH;
+int dir = LOW;
 
 void setup() {
   pinMode(stepPin, OUTPUT);
-//  pinMode(enablePin, OUTPUT);
   pinMode(dirPin, OUTPUT);
-  //pinMode(LED_BUILTIN, OUTPUT);
-  //digitalWrite(enablePin, LOW);
-  
+  digitalWrite(dirPin, dir);
+  digitalWrite(stepPin, LOW);
+
 }
 
+//dir low is to close the motor without the writing
+// +++++++++++++++++++++++++++------------
+
 void loop() {
-  digitalWrite(stepPin, LOW);
-  digitalWrite(dirPin, dir);
 
   for (int i=0; i<2510; i++) {
     digitalWrite(stepPin, HIGH);
@@ -24,7 +24,6 @@ void loop() {
     //digitalWrite(LED_BUILTIN, LOW);
     delayMicroseconds(400);
   }
-  //dir = !dir;
-  //digitalWrite(dirPin, dir);
-  delay(10);
+
+  delay(1000);
 }
