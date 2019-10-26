@@ -32,7 +32,7 @@ void loop() {
 
   // change delay
   unsigned long stepDelay = 400;
-  change_state(400);
+  change_state(stepDelay);
   print_state()
 }
 
@@ -46,7 +46,7 @@ void change_state(long delayTime){
 
 void update_motor(){
   motor_pulse_state = (motor_pulse_state == LOW)? HIGH : LOW;
-  digitalWrite(
+  digitalWrite(stepPin, motor_pulse_state);
 }
 
 void print_state(){
