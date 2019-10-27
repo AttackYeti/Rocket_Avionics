@@ -60,13 +60,8 @@ void change_state(long delayTime){
 }
 
 void update_motor(){
-  if motor_pulse_state == LOW){
+  if (motor_pulse_state == LOW){
     motor_pulse_state = HIGH;
-    if(dir == OPEN_DIR){
-      motor_pos += 1;
-    } else if(dir == CLOSE_DIR){
-      motor_pos -= 1;
-    }
   } else if(motor_pulse_state == HIGH){
     motor_pulse_state = LOW;
   }

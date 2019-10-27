@@ -16,7 +16,7 @@ int lastTime = micros();
 int lastPulse = LOW;
 
 int lastLog = 0;
-int logFrequency = 10;
+int logTimePeriod = 20;
 
 int now = 0;
 int sensorValue = 0;
@@ -90,7 +90,7 @@ void loop() {
   getInput();
   sensorValue = analogRead(A0);
   now = millis();
-  if (now - lastLog >= logFrequency) {
+  if (now - lastLog >= logTimePeriod) {
     lastLog = now;
     char buffer[20];
     sprintf(buffer, "%d,%d", motorPosition, sensorValue);
