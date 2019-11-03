@@ -9,6 +9,11 @@
 
 #define MIN_STEP_DELAY 400
 
+// int to psi:
+// 258 - 500
+// 330 - 1000
+// 410 - 1500 ~ little bit off
+
 int motor_pulse_state = LOW;
 
 int motor_pos = 0;
