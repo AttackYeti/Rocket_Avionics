@@ -40,7 +40,7 @@ typedef struct {
     int value;
     int input_pin;
     int sensor_type;
-    int buffer[5];
+    int lo_pass_buffer[5] = {0,0,0,0,0};
 } Sensor;
 
 void recieve_message(Stream &port);
@@ -92,10 +92,10 @@ void setup(){
 
 void loop() {
 
-    updateSensor(Sensor1);
-    updateSensor(Sensor2);
-    updateSensor(Sensor3);
-    updateSensor(Sensor4);
+    //updateSensor(Sensor1);
+    //updateSensor(Sensor2);
+    //updateSensor(Sensor3);
+    //updateSensor(Sensor4);
     
     recieve_message(rs485serial, SSDE);
     
@@ -184,35 +184,32 @@ void send_message(Stream &port, char message, int controlPin){
     }
 }
 
-void updateSensor(Sensor &Sensor) {
+void updateSensor(Sensor &sensor) {
 
   int sum = 0;
-  for(int i = sizeof(Sensor.buffer) - 1; i > 0 ; i--){
-    Sensor.buffer[i] = Sensor.buffer[i-1];
-    sum += Sensor.buffer[i];
+  for(int i = sizeof(sensor.lo_pass_buffer) - 1; i > 0 ; i--){
+    sensor.lo_pass_buffer[i] = sensor.lo_pass_buffer[i-1];
+    sum += sensor.lo_pass_buffer[i];
   }
 
-    int current_reading = adjustValue(Sensor, analogRead(Sensor.input_pin));
-  Sensor.buffer[0] = current_reading;
-  sum += Sensor.buffer[0];
+    int current_reading = adjustValue(sensor, analogRead(sensor.input_pin));
+    sensor.lo_pass_buffer[0] = current_reading;
+    sum += sensor.lo_pass_buffer[0];
 
-    Sensor.value = int(sum / sizeof(Sensor.buffer));
+    sensor.value = int(sum / sizeof(sensor.lo_pass_buffer));
 
-    Serial.print("Sensor ");
-    Serial.print(Sensor.sensor_type);
-    Serial.print(" reading:");
-    Serial.println(Sensor.value);
+    char message[100];
+    sprintf(message, "Sensor %i reading: %i", sensor.sensor_type, sensor.value);
+
+    Serial.println(message);
 
 }
 
-void initializeSensor(Sensor &Sensor,int input_pin, int sensor_type){
-
-  Sensor.value = 0;
-  Sensor.input_pin = input_pin;
-  Sensor.sensor_type = sensor_type;
-  for(int i = 0; i < sizeof(Sensor.buffer); i++){
-    //Sensor.buffer[i] = 0;
-  }
+void initializeSensor(Sensor &sensor,int input_pin, int sensor_type){
+  //THE PROBLEM IS SOMEWHERE IN HERE
+  sensor.value = 0;
+  sensor.input_pin = input_pin;
+  sensor.sensor_type = sensor_type;
   
   pinMode(input_pin, INPUT);
 }
