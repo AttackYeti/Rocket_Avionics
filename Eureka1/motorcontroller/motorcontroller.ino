@@ -59,6 +59,8 @@ void setup() {
 
   Serial.begin(9600);
   lastTime = micros();
+  Serial.println("setting up stuff");
+
 }
 
 unsigned long t = 0;
