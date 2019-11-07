@@ -45,7 +45,7 @@ typedef struct {
 
 void recieve_message(Stream &port);
 void send_message(char message, Stream &port);
-void initializeSensor(Sensor &Sensor, input_pin, sensor_type)
+void initializeSensor(Sensor &Sensor, int input_pin, int sensor_type);
 
 void command1(int value);
 void command2(int value);
@@ -68,11 +68,13 @@ Sensor Sensor4;
 // STATE VARIABLES
 
 void setup(){
+  
+    Serial.begin(9600);
+    Serial.println("Beginning Setup...");
     // initialize the serial ports
     rs485serial.begin(4800);
     pinMode(SSDE, OUTPUT);
     digitalWrite(SSDE, LOW);
-    Serial.begin(9600);
 
     Serial.println("Serial connections initialized.");
 
@@ -96,6 +98,7 @@ void loop() {
     updateSensor(Sensor4);
     
     recieve_message(rs485serial, SSDE);
+    
     recieve_message(Serial, 255);
 }
 
@@ -195,16 +198,22 @@ void updateSensor(Sensor &Sensor) {
 
     Sensor.value = int(sum / sizeof(Sensor.buffer));
 
+    Serial.print("Sensor ");
+    Serial.print(Sensor.sensor_type);
+    Serial.print(" reading:");
+    Serial.println(Sensor.value);
+
 }
 
-void initializeSensor(Sensor &Sensor, input_pin, sensor_type){
+void initializeSensor(Sensor &Sensor,int input_pin, int sensor_type){
 
   Sensor.value = 0;
   Sensor.input_pin = input_pin;
   Sensor.sensor_type = sensor_type;
   for(int i = 0; i < sizeof(Sensor.buffer); i++){
-    Sensor.buffer[i] = 0;
+    //Sensor.buffer[i] = 0;
   }
+  
   pinMode(input_pin, INPUT);
 }
 
@@ -219,7 +228,7 @@ int adjustValue(Sensor &Sensor, int raw_value) {
     rval = raw_value; // EDIT THIS
   }
   else{
-    Serial.println("Sensor Type not recongized")
+    Serial.println("Sensor Type not recongized");
   }
   return rval;
 }
@@ -227,22 +236,26 @@ int adjustValue(Sensor &Sensor, int raw_value) {
 // ~~~~ Primary commands ~~~~
 // Return reading from sensor input 1
 void command1(int value) {
-    char message = itoa(Sensor1.value);
+    char message[8];
+    itoa(Sensor1.value, message, 8);
     send_message(rs485serial, message, SSDE);
 }
 // Return reading from sensor input 2
 void command2(int value) {
-    char message = itoa(Sensor2.value);
+    char message[8];
+    itoa(Sensor2.value, message, 8);
     send_message(rs485serial, message, SSDE);
 }
 // Return reading from sensor input 3
 void command3(int value) {
-    char message = itoa(Sensor3.value);
+    char message[8];
+    itoa(Sensor3.value, message, 8);
     send_message(rs485serial, message, SSDE);
 }
 // Return reading from sensor input 4
 void command4(int value) {
-    char message = itoa(Sensor4.value);
+    char message[8];
+    itoa(Sensor4.value, message, 8);
     send_message(rs485serial, message, SSDE);
 }
 void command5(int value) {
