@@ -3,6 +3,8 @@
 const int stepPin = 9;
 const int directionPin = 8;
 const int enablePin = 12;
+const int highPressure = A0;
+const int lowPressure = A2;
 
 const int directionButtonPin = 3;
 const int enableButtonPin = 5;
@@ -19,7 +21,8 @@ int lastLog = 0;
 int logTimePeriod = 20;
 
 int now = 0;
-int sensorValue = 0;
+int lowSensorValue = 0;
+int highSensorValue = 0;
 
 // ___Physical Parameters ___
 int startSpeed = 600;
@@ -78,7 +81,8 @@ void setup() {
   pinMode(stepPin, OUTPUT);
   pinMode(enablePin, OUTPUT);
   pinMode(directionPin, OUTPUT);
-  pinMode(A0, INPUT);
+  pinMode(highPressure, INPUT);
+  pinMode(lowPressure, INPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   
   digitalWrite(enablePin, lastMotorEnable);
@@ -88,12 +92,13 @@ void setup() {
 
 void loop() {
   getInput();
-  sensorValue = analogRead(A0);
+  highSensorValue = analogRead(highPressure);
+  lowSensorValue = analogRead(lowPressure);
   now = millis();
   if (now - lastLog >= logTimePeriod) {
     lastLog = now;
     char buffer[20];
-    sprintf(buffer, "%d,%d", motorPosition, sensorValue);
+    sprintf(buffer, "%d,%d,%d", motorPosition, lowSensorValue, highSensorValue);
     Serial.println(buffer);
   }
   updateStepper();
