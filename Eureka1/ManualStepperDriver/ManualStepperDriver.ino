@@ -1,4 +1,3 @@
-
 // ___ Pin Definitions ___
 const int stepPin = 9;
 const int directionPin = 8;
@@ -92,14 +91,24 @@ void setup() {
 
 void loop() {
   getInput();
-  highSensorValue = analogRead(highPressure);
+  //highSensorValue = analogRead(highPressure);
   lowSensorValue = analogRead(lowPressure);
   now = millis();
   if (now - lastLog >= logTimePeriod) {
     lastLog = now;
     char buffer[20];
-    sprintf(buffer, "%d,%d,%d", motorPosition, lowSensorValue, highSensorValue);
-    Serial.println(buffer);
+    //sprintf(buffer, "%d,%d,%d", motorPosition, lowSensorValue, highSensorValue);
+    //Serial.println(buffer);
+    Serial.println(lowSensorValue);
   }
   updateStepper();
+}
+
+float lowPressureConversion(raw){
+  return 1.2258857538273733*raw + -123.89876445934394;
+}
+
+float highPressureConversion(raw){
+  return 6.612739309669555*raw - 1237.7612969223858;
+}
 }
