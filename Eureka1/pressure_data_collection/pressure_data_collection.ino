@@ -1,82 +1,44 @@
 
-#define PRESSURE_INPUT A1
+#define LOW_PRESSURE_LOX A1
+#define LOW_PRESSURE_PROP A2
 
-#define dirPin 2
-#define stepPin 3
-
-#define OPEN_DIR HIGH
-#define CLOSE_DIR LOW
-
-#define MIN_STEP_DELAY 400
-
-// int to psi:
-// 258 - 500
-// 330 - 1000
-// 410 - 1500 ~ little bit off
-
-int motor_pulse_state = LOW;
-
-int motor_pos = 0;
-int pressure = 0;
-
-int dir;
-
-unsigned long lastTime = 0;
-//300 ~ 900PSI
-//350 ~ 1100PSI
+#define HIGH_PRESSURE A6
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(dirPin, OUTPUT);
-  pinMode(stepPin, OUTPUT);
-  pinMode(PRESSURE_INPUT, INPUT);
-  digitalWrite(dirPin, OPEN_DIR);
+
+  pinMode(LOW_PRESSURE_LOX, INPUT);
+  pinMode(LOW_PRESSURE_PROP, INPUT);
+  pinMode(HIGH_PRESSURE, INPUT);
+
   Serial.begin(9600);
-  lastTime = micros();
-  dir = CLOSE_DIR;
 }
 
 // 0.88V - 4.4V : ?? - 5000 PSI
 
+int lowpressurelox, lowpressureprop, highpressure;
+float converted_lox_low, converted_prop_low, converted_high;
+
 void loop() {
   // put your main code here, to run repeatedly:
-  pressure = analogRead(PRESSURE_INPUT);
+  lowpressurelox = analogRead(LOW_PRESSURE_LOX);
+  lowpressureprop = analogRead(LOW_PRESSURE_PROP);
+  highpressure = analogRead(HIGH_PRESSURE);
 
-  // change delay
-  //unsigned long stepDelay = 400;
-  byte incomingByte = Serial.read(); 
-  if(incomingByte == 'w'){
-    for (int i = 0; i < 20000; i++){
-    change_state(MIN_STEP_DELAY);
-    }
-  } else if (incomingByte == 'r'){
-    dir = (dir == CLOSE_DIR)? OPEN_DIR : CLOSE_DIR;
-    digitalWrite(dirPin, dir);
-  }
-  print_state();
+  converted_lox_low = lowPressureConversion(lowpressurelox);
+  converted_prop_low = lowPressureConversion(lowpressureprop);
+
+  converted_high = highPressureConversion(highpressure);
+  
+  char buffer[20];
+  sprintf(buffer, "%d,%d,%d", converted_lox_low, converted_prop_low, converted_high);
+  Serial.println(buffer);
 }
 
-void change_state(long delayTime){
-  unsigned long now = micros();
-  if (abs(now - lastTime) > delayTime){
-    update_motor();
-    lastTime = micros();
-  }
+float lowPressureConversion(int raw){
+  return 1.2258857538273733*raw + -123.89876445934394;
 }
 
-void update_motor(){
-  if (motor_pulse_state == LOW){
-    motor_pulse_state = HIGH;
-  } else if(motor_pulse_state == HIGH){
-    motor_pulse_state = LOW;
-  }
-  digitalWrite(stepPin, motor_pulse_state);  
-}
-
-void print_state(){
-  Serial.print(micros());
-  Serial.print(",");
-  Serial.print(pressure);
-  Serial.print(",");
-  Serial.println(motor_pos);
+float highPressureConversion(int raw){
+  return 6.612739309669555*raw - 1237.7612969223858;
 }

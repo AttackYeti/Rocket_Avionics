@@ -111,4 +111,3 @@ float lowPressureConversion(raw){
 float highPressureConversion(raw){
   return 6.612739309669555*raw - 1237.7612969223858;
 }
-}
